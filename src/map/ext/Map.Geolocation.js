@@ -4,17 +4,17 @@
 
 L.Map.include({
 	_defaultLocateOptions: {
-		watch: false,
-		setView: false,
-		maxZoom: Infinity,
 		timeout: 10000,
-		maximumAge: 0,
-		enableHighAccuracy: false
+		watch: false
+		// setView: false
+		// maxZoom: <Number>
+		// maximumAge: 0
+		// enableHighAccuracy: false
 	},
 
 	locate: function (/*Object*/ options) {
 
-		options = this._locateOptions = L.extend(this._defaultLocateOptions, options);
+		options = this._locateOptions = L.extend({}, this._defaultLocateOptions, options);
 
 		if (!navigator.geolocation) {
 			this._handleGeolocationError({
@@ -66,19 +66,12 @@ L.Map.include({
 		var lat = pos.coords.latitude,
 		    lng = pos.coords.longitude,
 		    latlng = new L.LatLng(lat, lng),
-
-		    latAccuracy = 180 * pos.coords.accuracy / 40075017,
-		    lngAccuracy = latAccuracy / Math.cos(L.LatLng.DEG_TO_RAD * lat),
-
-		    bounds = L.latLngBounds(
-		            [lat - latAccuracy, lng - lngAccuracy],
-		            [lat + latAccuracy, lng + lngAccuracy]),
-
+		    bounds = latlng.toBounds(pos.coords.accuracy),
 		    options = this._locateOptions;
 
 		if (options.setView) {
-			var zoom = Math.min(this.getBoundsZoom(bounds), options.maxZoom);
-			this.setView(latlng, zoom);
+			var zoom = this.getBoundsZoom(bounds);
+			this.setView(latlng, options.maxZoom ? Math.min(zoom, options.maxZoom) : zoom);
 		}
 
 		var data = {

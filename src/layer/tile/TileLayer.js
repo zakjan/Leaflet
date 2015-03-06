@@ -2,33 +2,32 @@
  * L.TileLayer is used for standard xyz-numbered tile layers.
  */
 
-L.TileLayer = L.Class.extend({
-	includes: L.Mixin.Events,
+L.TileLayer = L.GridLayer.extend({
 
 	options: {
-		minZoom: 0,
 		maxZoom: 18,
-		tileSize: 256,
+
 		subdomains: 'abc',
 		errorTileUrl: '',
-		attribution: '',
 		zoomOffset: 0,
+<<<<<<< HEAD
 		opacity: 1,
 		/* (undefined works too)
 		zIndex: null,
+=======
+
+		maxNativeZoom: null, // Number
+>>>>>>> master
 		tms: false,
-		continuousWorld: false,
-		noWrap: false,
 		zoomReverse: false,
 		detectRetina: false,
-		reuseTiles: false,
-		bounds: false,
-		*/
-		unloadInvisibleTiles: L.Browser.mobile,
-		updateWhenIdle: L.Browser.mobile
+		crossOrigin: false
 	},
 
 	initialize: function (url, options) {
+
+		this._url = url;
+
 		options = L.setOptions(this, options);
 
 		// detecting retina displays, adjusting tileSize and zoom levels
@@ -37,6 +36,7 @@ L.TileLayer = L.Class.extend({
 			options.tileSize = Math.floor(options.tileSize / 2);
 			options.zoomOffset++;
 
+<<<<<<< HEAD
 			if (options.minZoom > 0) {
 				options.minZoom--;
 			}
@@ -122,45 +122,20 @@ L.TileLayer = L.Class.extend({
 		if (this._container) {
 			pane.appendChild(this._container);
 			this._setAutoZIndex(pane, Math.max);
+=======
+			options.minZoom = Math.max(0, options.minZoom);
+			options.maxZoom--;
+>>>>>>> master
 		}
 
-		return this;
-	},
-
-	bringToBack: function () {
-		var pane = this._map._panes.tilePane;
-
-		if (this._container) {
-			pane.insertBefore(this._container, pane.firstChild);
-			this._setAutoZIndex(pane, Math.min);
+		if (typeof options.subdomains === 'string') {
+			options.subdomains = options.subdomains.split('');
 		}
 
-		return this;
-	},
-
-	getAttribution: function () {
-		return this.options.attribution;
-	},
-
-	getContainer: function () {
-		return this._container;
-	},
-
-	setOpacity: function (opacity) {
-		this.options.opacity = opacity;
-
-		if (this._map) {
-			this._updateOpacity();
+		// for https://github.com/Leaflet/Leaflet/issues/137
+		if (!L.Browser.android) {
+			this.on('tileunload', this._onTileRemove);
 		}
-
-		return this;
-	},
-
-	setZIndex: function (zIndex) {
-		this.options.zIndex = zIndex;
-		this._updateZIndex();
-
-		return this;
 	},
 
 	setUrl: function (url, noRedraw) {
@@ -169,118 +144,65 @@ L.TileLayer = L.Class.extend({
 		if (!noRedraw) {
 			this.redraw();
 		}
-
 		return this;
 	},
 
-	redraw: function () {
-		if (this._map) {
-			this._reset({hard: true});
-			this._update();
+	createTile: function (coords, done) {
+		var tile = document.createElement('img');
+
+		tile.onload = L.bind(this._tileOnLoad, this, done, tile);
+		tile.onerror = L.bind(this._tileOnError, this, done, tile);
+
+		if (this.options.crossOrigin) {
+			tile.crossOrigin = '';
 		}
-		return this;
+
+		/*
+		 Alt tag is set to empty string to keep screen readers from reading URL and for compliance reasons
+		 http://www.w3.org/TR/WCAG20-TECHS/H67
+		*/
+		tile.alt = '';
+
+		tile.src = this.getTileUrl(coords);
+
+		return tile;
 	},
 
-	_updateZIndex: function () {
-		if (this._container && this.options.zIndex !== undefined) {
-			this._container.style.zIndex = this.options.zIndex;
-		}
+	getTileUrl: function (coords) {
+		return L.Util.template(this._url, L.extend({
+			r: this.options.detectRetina && L.Browser.retina && this.options.maxZoom > 0 ? '@2x' : '',
+			s: this._getSubdomain(coords),
+			x: coords.x,
+			y: this.options.tms ? this._globalTileRange.max.y - coords.y : coords.y,
+			z: this._getZoomForUrl()
+		}, this.options));
 	},
 
-	_setAutoZIndex: function (pane, compare) {
-
-		var layers = pane.children,
-		    edgeZIndex = -compare(Infinity, -Infinity), // -Infinity for max, Infinity for min
-		    zIndex, i, len;
-
-		for (i = 0, len = layers.length; i < len; i++) {
-
-			if (layers[i] !== this._container) {
-				zIndex = parseInt(layers[i].style.zIndex, 10);
-
-				if (!isNaN(zIndex)) {
-					edgeZIndex = compare(edgeZIndex, zIndex);
-				}
-			}
-		}
-
-		this.options.zIndex = this._container.style.zIndex =
-		        (isFinite(edgeZIndex) ? edgeZIndex : 0) + compare(1, -1);
+	_tileOnLoad: function (done, tile) {
+		done(null, tile);
 	},
 
-	_updateOpacity: function () {
-		var i,
-		    tiles = this._tiles;
-
-		if (L.Browser.ielt9) {
-			for (i in tiles) {
-				L.DomUtil.setOpacity(tiles[i], this.options.opacity);
-			}
-		} else {
-			L.DomUtil.setOpacity(this._container, this.options.opacity);
+	_tileOnError: function (done, tile, e) {
+		var errorUrl = this.options.errorTileUrl;
+		if (errorUrl) {
+			tile.src = errorUrl;
 		}
-	},
-
-	_initContainer: function () {
-		var tilePane = this._map._panes.tilePane;
-
-		if (!this._container) {
-			this._container = L.DomUtil.create('div', 'leaflet-layer');
-
-			this._updateZIndex();
-
-			if (this._animated) {
-				var className = 'leaflet-tile-container';
-
-				this._bgBuffer = L.DomUtil.create('div', className, this._container);
-				this._tileContainer = L.DomUtil.create('div', className, this._container);
-
-			} else {
-				this._tileContainer = this._container;
-			}
-
-			tilePane.appendChild(this._container);
-
-			if (this.options.opacity < 1) {
-				this._updateOpacity();
-			}
-		}
-	},
-
-	_reset: function (e) {
-		for (var key in this._tiles) {
-			this.fire('tileunload', {tile: this._tiles[key]});
-		}
-
-		this._tiles = {};
-		this._tilesToLoad = 0;
-
-		if (this.options.reuseTiles) {
-			this._unusedTiles = [];
-		}
-
-		this._tileContainer.innerHTML = '';
-
-		if (this._animated && e && e.hard) {
-			this._clearBgBuffer();
-		}
-
-		this._initContainer();
+		done(e, tile);
 	},
 
 	_getTileSize: function () {
 		var map = this._map,
-		    zoom = map.getZoom() + this.options.zoomOffset,
-		    zoomN = this.options.maxNativeZoom,
-		    tileSize = this.options.tileSize;
+		    options = this.options,
+		    zoom = this._tileZoom + options.zoomOffset,
+		    zoomN = options.maxNativeZoom;
 
-		if (zoomN && zoom > zoomN) {
-			tileSize = Math.round(map.getZoomScale(zoom) / map.getZoomScale(zoomN) * tileSize);
-		}
-
-		return tileSize;
+		// increase tile size when overscaling
+		return zoomN !== null && zoom > zoomN ?
+				Math.round(options.tileSize / map.getZoomScale(zoomN, zoom)) :
+				options.tileSize;
 	},
 
+<<<<<<< HEAD
 	_update: function () {
 
 		if (!this._map) { return; }
@@ -437,12 +359,16 @@ L.TileLayer = L.Class.extend({
 		if (tile.parentNode !== this._tileContainer) {
 			container.appendChild(tile);
 		}
+=======
+	_onTileRemove: function (e) {
+		e.tile.onload = null;
+>>>>>>> master
 	},
 
 	_getZoomForUrl: function () {
 
 		var options = this.options,
-		    zoom = this._map.getZoom();
+		    zoom = this._tileZoom;
 
 		if (options.zoomReverse) {
 			zoom = options.maxZoom - zoom;
@@ -451,6 +377,7 @@ L.TileLayer = L.Class.extend({
 		return zoom + options.zoomOffset;
 	},
 
+<<<<<<< HEAD
 	_getTilePos: function (tilePoint) {
 		var origin = this._map.getPixelOrigin(),
 		    tileSize = this.options.tileSize;
@@ -491,11 +418,14 @@ L.TileLayer = L.Class.extend({
 		tilePoint.z = this._getZoomForUrl();
 	},
 
+=======
+>>>>>>> master
 	_getSubdomain: function (tilePoint) {
 		var index = Math.abs(tilePoint.x + tilePoint.y) % this.options.subdomains.length;
 		return this.options.subdomains[index];
 	},
 
+<<<<<<< HEAD
 	_createTileProto: function () {
 		var img = this._tileImg = L.DomUtil.create('img', 'leaflet-tile');
 		img.style.width = img.style.height = this.options.tileSize + 'px';
@@ -517,80 +447,22 @@ L.TileLayer = L.Class.extend({
 	_createTile: function () {
 		var tile = this._tileImg.cloneNode(false);
 		tile.onselectstart = tile.onmousemove = L.Util.falseFn;
+=======
+	// stops loading all tiles in the background layer
+	_abortLoading: function () {
+		var i, tile;
+		for (i in this._tiles) {
+			tile = this._tiles[i].el;
 
-		if (L.Browser.ielt9 && this.options.opacity !== undefined) {
-			L.DomUtil.setOpacity(tile, this.options.opacity);
-		}
-		// without this hack, tiles disappear after zoom on Chrome for Android
-		// https://github.com/Leaflet/Leaflet/issues/2078
-		if (L.Browser.mobileWebkit3d) {
-			tile.style.WebkitBackfaceVisibility = 'hidden';
-		}
-		return tile;
-	},
+			tile.onload = L.Util.falseFn;
+			tile.onerror = L.Util.falseFn;
+>>>>>>> master
 
-	_loadTile: function (tile, tilePoint) {
-		tile._layer  = this;
-		tile.onload  = this._tileOnLoad;
-		tile.onerror = this._tileOnError;
-
-		this._adjustTilePoint(tilePoint);
-		tile.src     = this.getTileUrl(tilePoint);
-
-		this.fire('tileloadstart', {
-			tile: tile,
-			url: tile.src
-		});
-	},
-
-	_tileLoaded: function () {
-		this._tilesToLoad--;
-
-		if (this._animated) {
-			L.DomUtil.addClass(this._tileContainer, 'leaflet-zoom-animated');
-		}
-
-		if (!this._tilesToLoad) {
-			this.fire('load');
-
-			if (this._animated) {
-				// clear scaled tiles after all new tiles are loaded (for performance)
-				clearTimeout(this._clearBgBufferTimer);
-				this._clearBgBufferTimer = setTimeout(L.bind(this._clearBgBuffer, this), 500);
+			if (!tile.complete) {
+				tile.src = L.Util.emptyImageUrl;
+				L.DomUtil.remove(tile);
 			}
 		}
-	},
-
-	_tileOnLoad: function () {
-		var layer = this._layer;
-
-		//Only if we are loading an actual image
-		if (this.src !== L.Util.emptyImageUrl) {
-			L.DomUtil.addClass(this, 'leaflet-tile-loaded');
-
-			layer.fire('tileload', {
-				tile: this,
-				url: this.src
-			});
-		}
-
-		layer._tileLoaded();
-	},
-
-	_tileOnError: function () {
-		var layer = this._layer;
-
-		layer.fire('tileerror', {
-			tile: this,
-			url: this.src
-		});
-
-		var newUrl = layer.options.errorTileUrl;
-		if (newUrl) {
-			this.src = newUrl;
-		}
-
-		layer._tileLoaded();
 	}
 });
 

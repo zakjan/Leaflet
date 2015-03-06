@@ -6,7 +6,8 @@ L.Control.Layers = L.Control.extend({
 	options: {
 		collapsed: true,
 		position: 'topright',
-		autoZIndex: true
+		autoZIndex: true,
+		hideSingleBase: false
 	},
 
 	initialize: function (baseLayers, overlays, options) {
@@ -25,47 +26,35 @@ L.Control.Layers = L.Control.extend({
 		}
 	},
 
-	onAdd: function (map) {
+	onAdd: function () {
 		this._initLayout();
 		this._update();
-
-		map
-		    .on('layeradd', this._onLayerChange, this)
-		    .on('layerremove', this._onLayerChange, this);
 
 		return this._container;
 	},
 
-	onRemove: function (map) {
-		map
-		    .off('layeradd', this._onLayerChange)
-		    .off('layerremove', this._onLayerChange);
-	},
-
 	addBaseLayer: function (layer, name) {
 		this._addLayer(layer, name);
-		this._update();
-		return this;
+		return this._update();
 	},
 
 	addOverlay: function (layer, name) {
 		this._addLayer(layer, name, true);
-		this._update();
-		return this;
+		return this._update();
 	},
 
 	removeLayer: function (layer) {
-		var id = L.stamp(layer);
-		delete this._layers[id];
-		this._update();
-		return this;
+		layer.off('add remove', this._onLayerChange, this);
+
+		delete this._layers[L.stamp(layer)];
+		return this._update();
 	},
 
 	_initLayout: function () {
 		var className = 'leaflet-control-layers',
 		    container = this._container = L.DomUtil.create('div', className);
 
-		//Makes this work on IE10 Touch devices by stopping it from firing a mouseout event when the touch is released
+		// makes this work on IE touch devices by stopping it from firing a mouseout event when the touch is released
 		container.setAttribute('aria-haspopup', true);
 
 		if (!L.Browser.touch) {
@@ -80,10 +69,12 @@ L.Control.Layers = L.Control.extend({
 
 		if (this.options.collapsed) {
 			if (!L.Browser.android) {
-				L.DomEvent
-				    .on(container, 'mouseover', this._expand, this)
-				    .on(container, 'mouseout', this._collapse, this);
+				L.DomEvent.on(container, {
+					mouseenter: this._expand,
+					mouseleave: this._collapse
+				}, this);
 			}
+
 			var link = this._layersLink = L.DomUtil.create('a', className + '-toggle', container);
 			link.href = '#';
 			link.title = 'Layers';
@@ -92,11 +83,11 @@ L.Control.Layers = L.Control.extend({
 				L.DomEvent
 				    .on(link, 'click', L.DomEvent.stop)
 				    .on(link, 'click', this._expand, this);
-			}
-			else {
+			} else {
 				L.DomEvent.on(link, 'focus', this._expand, this);
 			}
-			//Work around for Firefox android issue https://github.com/Leaflet/Leaflet/issues/2033
+
+			// work around for Firefox Android issue https://github.com/Leaflet/Leaflet/issues/2033
 			L.DomEvent.on(form, 'click', function () {
 				setTimeout(L.bind(this._onInputClick, this), 0);
 			}, this);
@@ -115,6 +106,8 @@ L.Control.Layers = L.Control.extend({
 	},
 
 	_addLayer: function (layer, name, overlay) {
+		layer.on('add remove', this._onLayerChange, this);
+
 		var id = L.stamp(layer);
 
 		this._layers[id] = {
@@ -130,53 +123,53 @@ L.Control.Layers = L.Control.extend({
 	},
 
 	_update: function () {
-		if (!this._container) {
-			return;
-		}
+		if (!this._container) { return this; }
 
-		this._baseLayersList.innerHTML = '';
-		this._overlaysList.innerHTML = '';
+		L.DomUtil.empty(this._baseLayersList);
+		L.DomUtil.empty(this._overlaysList);
 
-		var baseLayersPresent = false,
-		    overlaysPresent = false,
-		    i, obj;
+		var baseLayersPresent, overlaysPresent, i, obj, baseLayersCount = 0;
 
 		for (i in this._layers) {
 			obj = this._layers[i];
 			this._addItem(obj);
 			overlaysPresent = overlaysPresent || obj.overlay;
 			baseLayersPresent = baseLayersPresent || !obj.overlay;
+			baseLayersCount += !obj.overlay ? 1 : 0;
+		}
+
+		// Hide base layers section if there's only one layer.
+		if (this.options.hideSingleBase) {
+			baseLayersPresent = baseLayersPresent && baseLayersCount > 1;
+			this._baseLayersList.style.display = baseLayersPresent ? '' : 'none';
 		}
 
 		this._separator.style.display = overlaysPresent && baseLayersPresent ? '' : 'none';
+
+		return this;
 	},
 
 	_onLayerChange: function (e) {
-		var obj = this._layers[L.stamp(e.layer)];
-
-		if (!obj) { return; }
-
 		if (!this._handlingClick) {
 			this._update();
 		}
 
-		var type = obj.overlay ?
-			(e.type === 'layeradd' ? 'overlayadd' : 'overlayremove') :
-			(e.type === 'layeradd' ? 'baselayerchange' : null);
+		var overlay = this._layers[L.stamp(e.target)].overlay;
+
+		var type = overlay ?
+			(e.type === 'add' ? 'overlayadd' : 'overlayremove') :
+			(e.type === 'add' ? 'baselayerchange' : null);
 
 		if (type) {
-			this._map.fire(type, obj);
+			this._map.fire(type, e.target);
 		}
 	},
 
 	// IE7 bugs out if you create a radio dynamically, so you have to do it this hacky way (see http://bit.ly/PqYLBe)
 	_createRadioElement: function (name, checked) {
 
-		var radioHtml = '<input type="radio" class="leaflet-control-layers-selector" name="' + name + '"';
-		if (checked) {
-			radioHtml += ' checked="checked"';
-		}
-		radioHtml += '/>';
+		var radioHtml = '<input type="radio" class="leaflet-control-layers-selector" name="' +
+				name + '"' + (checked ? ' checked="checked"' : '') + '/>';
 
 		var radioFragment = document.createElement('div');
 		radioFragment.innerHTML = radioHtml;
@@ -186,8 +179,8 @@ L.Control.Layers = L.Control.extend({
 
 	_addItem: function (obj) {
 		var label = document.createElement('label'),
-		    input,
-		    checked = this._map.hasLayer(obj.layer);
+		    checked = this._map.hasLayer(obj.layer),
+		    input;
 
 		if (obj.overlay) {
 			input = document.createElement('input');
@@ -215,22 +208,32 @@ L.Control.Layers = L.Control.extend({
 	},
 
 	_onInputClick: function () {
-		var i, input, obj,
-		    inputs = this._form.getElementsByTagName('input'),
-		    inputsLen = inputs.length;
+		var inputs = this._form.getElementsByTagName('input'),
+		    input, layer, hasLayer;
+		var addedLayers = [],
+		    removedLayers = [];
 
 		this._handlingClick = true;
 
-		for (i = 0; i < inputsLen; i++) {
+		for (var i = 0, len = inputs.length; i < len; i++) {
 			input = inputs[i];
-			obj = this._layers[input.layerId];
+			layer = this._layers[input.layerId].layer;
+			hasLayer = this._map.hasLayer(layer);
 
-			if (input.checked && !this._map.hasLayer(obj.layer)) {
-				this._map.addLayer(obj.layer);
+			if (input.checked && !hasLayer) {
+				addedLayers.push(layer);
 
-			} else if (!input.checked && this._map.hasLayer(obj.layer)) {
-				this._map.removeLayer(obj.layer);
+			} else if (!input.checked && hasLayer) {
+				removedLayers.push(layer);
 			}
+		}
+
+		// Bugfix issue 2318: Should remove all old layers before readding new ones
+		for (i = 0; i < removedLayers.length; i++) {
+			this._map.removeLayer(removedLayers[i]);
+		}
+		for (i = 0; i < addedLayers.length; i++) {
+			this._map.addLayer(addedLayers[i]);
 		}
 
 		this._handlingClick = false;
@@ -243,7 +246,7 @@ L.Control.Layers = L.Control.extend({
 	},
 
 	_collapse: function () {
-		this._container.className = this._container.className.replace(' leaflet-control-layers-expanded', '');
+		L.DomUtil.removeClass(this._container, 'leaflet-control-layers-expanded');
 	}
 });
 

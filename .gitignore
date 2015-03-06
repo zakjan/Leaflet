@@ -12,3 +12,5 @@ coverage/
 index.html
 .mailmap
 Gemfile.lock
+bower.json
+component.json

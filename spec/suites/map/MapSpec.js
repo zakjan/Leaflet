@@ -121,11 +121,18 @@ describe("Map", function () {
 			expect(map.getZoom()).to.be(13);
 			expect(map.getCenter().distanceTo([51.505, -0.09])).to.be.lessThan(5);
 		});
+
 		it("can be passed without a zoom specified", function () {
 			map.setZoom(13);
 			expect(map.setView([51.605, -0.11])).to.be(map);
 			expect(map.getZoom()).to.be(13);
 			expect(map.getCenter().distanceTo([51.605, -0.11])).to.be.lessThan(5);
+		});
+
+		it("defaults to zoom passed as map option", function () {
+			map = L.map(document.createElement('div'), {zoom: 13});
+			expect(map.setView([51.605, -0.11])).to.be(map);
+			expect(map.getZoom()).to.be(13);
 		});
 	});
 
@@ -199,16 +206,33 @@ describe("Map", function () {
 		});
 	});
 
+	describe("#hasLayer", function () {
+		it("returns false when passed undefined, null, or false", function () {
+			var map = L.map(document.createElement('div'));
+			expect(map.hasLayer(undefined)).to.equal(false);
+			expect(map.hasLayer(null)).to.equal(false);
+			expect(map.hasLayer(false)).to.equal(false);
+		});
+	});
+
+	function layerSpy() {
+		var layer = new L.Layer();
+		layer.onAdd = sinon.spy();
+		layer.onRemove = sinon.spy();
+		return layer;
+	}
+
 	describe("#addLayer", function () {
+
 		it("calls layer.onAdd immediately if the map is ready", function () {
-			var layer = { onAdd: sinon.spy() };
+			var layer = layerSpy();
 			map.setView([0, 0], 0);
 			map.addLayer(layer);
 			expect(layer.onAdd.called).to.be.ok();
 		});
 
 		it("calls layer.onAdd when the map becomes ready", function () {
-			var layer = { onAdd: sinon.spy() };
+			var layer = layerSpy();
 			map.addLayer(layer);
 			expect(layer.onAdd.called).not.to.be.ok();
 			map.setView([0, 0], 0);
@@ -216,7 +240,7 @@ describe("Map", function () {
 		});
 
 		it("does not call layer.onAdd if the layer is removed before the map becomes ready", function () {
-			var layer = { onAdd: sinon.spy(), onRemove: sinon.spy() };
+			var layer = layerSpy();
 			map.addLayer(layer);
 			map.removeLayer(layer);
 			map.setView([0, 0], 0);
@@ -224,7 +248,7 @@ describe("Map", function () {
 		});
 
 		it("fires a layeradd event immediately if the map is ready", function () {
-			var layer = { onAdd: sinon.spy() },
+			var layer = layerSpy(),
 			    spy = sinon.spy();
 			map.on('layeradd', spy);
 			map.setView([0, 0], 0);
@@ -233,7 +257,7 @@ describe("Map", function () {
 		});
 
 		it("fires a layeradd event when the map becomes ready", function () {
-			var layer = { onAdd: sinon.spy() },
+			var layer = layerSpy(),
 			    spy = sinon.spy();
 			map.on('layeradd', spy);
 			map.addLayer(layer);
@@ -243,7 +267,7 @@ describe("Map", function () {
 		});
 
 		it("does not fire a layeradd event if the layer is removed before the map becomes ready", function () {
-			var layer = { onAdd: sinon.spy(), onRemove: sinon.spy() },
+			var layer = layerSpy(),
 			    spy = sinon.spy();
 			map.on('layeradd', spy);
 			map.addLayer(layer);
@@ -253,7 +277,7 @@ describe("Map", function () {
 		});
 
 		it("adds the layer before firing layeradd", function (done) {
-			var layer = { onAdd: sinon.spy(), onRemove: sinon.spy() };
+			var layer = layerSpy();
 			map.on('layeradd', function () {
 				expect(map.hasLayer(layer)).to.be.ok();
 				done();
@@ -299,7 +323,7 @@ describe("Map", function () {
 
 	describe("#removeLayer", function () {
 		it("calls layer.onRemove if the map is ready", function () {
-			var layer = { onAdd: sinon.spy(), onRemove: sinon.spy() };
+			var layer = layerSpy();
 			map.setView([0, 0], 0);
 			map.addLayer(layer);
 			map.removeLayer(layer);
@@ -307,21 +331,21 @@ describe("Map", function () {
 		});
 
 		it("does not call layer.onRemove if the layer was not added", function () {
-			var layer = { onAdd: sinon.spy(), onRemove: sinon.spy() };
+			var layer = layerSpy();
 			map.setView([0, 0], 0);
 			map.removeLayer(layer);
 			expect(layer.onRemove.called).not.to.be.ok();
 		});
 
 		it("does not call layer.onRemove if the map is not ready", function () {
-			var layer = { onAdd: sinon.spy(), onRemove: sinon.spy() };
+			var layer = layerSpy();
 			map.addLayer(layer);
 			map.removeLayer(layer);
 			expect(layer.onRemove.called).not.to.be.ok();
 		});
 
 		it("fires a layerremove event if the map is ready", function () {
-			var layer = { onAdd: sinon.spy(), onRemove: sinon.spy() },
+			var layer = layerSpy(),
 			    spy = sinon.spy();
 			map.on('layerremove', spy);
 			map.setView([0, 0], 0);
@@ -331,7 +355,7 @@ describe("Map", function () {
 		});
 
 		it("does not fire a layerremove if the layer was not added", function () {
-			var layer = { onAdd: sinon.spy(), onRemove: sinon.spy() },
+			var layer = layerSpy(),
 			    spy = sinon.spy();
 			map.on('layerremove', spy);
 			map.setView([0, 0], 0);
@@ -340,7 +364,7 @@ describe("Map", function () {
 		});
 
 		it("does not fire a layerremove if the map is not ready", function () {
-			var layer = { onAdd: sinon.spy(), onRemove: sinon.spy() },
+			var layer = layerSpy(),
 			    spy = sinon.spy();
 			map.on('layerremove', spy);
 			map.addLayer(layer);
@@ -349,12 +373,25 @@ describe("Map", function () {
 		});
 
 		it("removes the layer before firing layerremove", function (done) {
-			var layer = { onAdd: sinon.spy(), onRemove: sinon.spy() };
+			var layer = layerSpy();
 			map.on('layerremove', function () {
 				expect(map.hasLayer(layer)).not.to.be.ok();
 				done();
 			});
 			map.setView([0, 0], 0);
+			map.addLayer(layer);
+			map.removeLayer(layer);
+		});
+
+		it("supports adding and removing a tile layer without initializing the map", function () {
+			var layer = L.tileLayer("{z}{x}{y}");
+			map.addLayer(layer);
+			map.removeLayer(layer);
+		});
+
+		it("supports adding and removing a tile layer without initializing the map", function () {
+			map.setView([0, 0], 18);
+			var layer = L.gridLayer();
 			map.addLayer(layer);
 			map.removeLayer(layer);
 		});

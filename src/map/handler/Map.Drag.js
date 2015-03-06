@@ -8,8 +8,7 @@ L.Map.mergeOptions({
 	inertia: !L.Browser.android23,
 	inertiaDeceleration: 3400, // px/s^2
 	inertiaMaxSpeed: Infinity, // px/s
-	inertiaThreshold: L.Browser.touch ? 32 : 18, // ms
-	easeLinearity: 0.25,
+	easeLinearity: 0.2,
 
 	// TODO refactor, move to CRS
 	worldCopyJump: false
@@ -23,9 +22,10 @@ L.Map.Drag = L.Handler.extend({
 			this._draggable = new L.Draggable(map._mapPane, map._container);
 
 			this._draggable.on({
-				'dragstart': this._onDragStart,
-				'drag': this._onDrag,
-				'dragend': this._onDragEnd
+				down: this._onDown,
+				dragstart: this._onDragStart,
+				drag: this._onDrag,
+				dragend: this._onDragEnd
 			}, this);
 
 			if (map.options.worldCopyJump) {
@@ -46,12 +46,12 @@ L.Map.Drag = L.Handler.extend({
 		return this._draggable && this._draggable._moved;
 	},
 
+	_onDown: function () {
+		this._map.stop();
+	},
+
 	_onDragStart: function () {
 		var map = this._map;
-
-		if (map._panAnim) {
-			map._panAnim.stop();
-		}
 
 		map
 		    .fire('movestart')
@@ -63,32 +63,31 @@ L.Map.Drag = L.Handler.extend({
 		}
 	},
 
-	_onDrag: function () {
+	_onDrag: function (e) {
 		if (this._map.options.inertia) {
 			var time = this._lastTime = +new Date(),
-			    pos = this._lastPos = this._draggable._newPos;
+			    pos = this._lastPos = this._draggable._absPos || this._draggable._newPos;
 
 			this._positions.push(pos);
 			this._times.push(time);
 
-			if (time - this._times[0] > 200) {
+			if (time - this._times[0] > 50) {
 				this._positions.shift();
 				this._times.shift();
 			}
 		}
 
 		this._map
-		    .fire('move')
-		    .fire('drag');
+		    .fire('move', e)
+		    .fire('drag', e);
 	},
 
 	_onViewReset: function () {
-		// TODO fix hardcoded Earth values
-		var pxCenter = this._map.getSize()._divideBy(2),
+		var pxCenter = this._map.getSize().divideBy(2),
 		    pxWorldCenter = this._map.latLngToLayerPoint([0, 0]);
 
 		this._initialWorldOffset = pxWorldCenter.subtract(pxCenter).x;
-		this._worldWidth = this._map.project([0, 180]).x;
+		this._worldWidth = this._map.getPixelWorldBounds().getSize().x;
 	},
 
 	_onPreDrag: function () {
@@ -101,15 +100,15 @@ L.Map.Drag = L.Handler.extend({
 		    newX2 = (x + halfWidth + dx) % worldWidth - halfWidth - dx,
 		    newX = Math.abs(newX1 + dx) < Math.abs(newX2 + dx) ? newX1 : newX2;
 
+		this._draggable._absPos = this._draggable._newPos.clone();
 		this._draggable._newPos.x = newX;
 	},
 
 	_onDragEnd: function (e) {
 		var map = this._map,
 		    options = map.options,
-		    delay = +new Date() - this._lastTime,
 
-		    noInertia = !options.inertia || delay > options.inertiaThreshold || !this._positions[0];
+		    noInertia = !options.inertia || this._times.length < 2;
 
 		map.fire('dragend', e);
 
@@ -119,7 +118,7 @@ L.Map.Drag = L.Handler.extend({
 		} else {
 
 			var direction = this._lastPos.subtract(this._positions[0]),
-			    duration = (this._lastTime + delay - this._times[0]) / 1000,
+			    duration = (this._lastTime - this._times[0]) / 1000,
 			    ease = options.easeLinearity,
 
 			    speedVector = direction.multiplyBy(ease / duration),
@@ -141,7 +140,8 @@ L.Map.Drag = L.Handler.extend({
 					map.panBy(offset, {
 						duration: decelerationDuration,
 						easeLinearity: ease,
-						noMoveStart: true
+						noMoveStart: true,
+						animate: true
 					});
 				});
 			}

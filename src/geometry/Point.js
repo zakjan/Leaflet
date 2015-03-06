@@ -2,7 +2,7 @@
  * L.Point represents a point with x and y coordinates.
  */
 
-L.Point = function (/*Number*/ x, /*Number*/ y, /*Boolean*/ round) {
+L.Point = function (x, y, round) {
 	this.x = (round ? Math.round(x) : x);
 	this.y = (round ? Math.round(y) : y);
 };
@@ -72,6 +72,16 @@ L.Point.prototype = {
 	_floor: function () {
 		this.x = Math.floor(this.x);
 		this.y = Math.floor(this.y);
+		return this;
+	},
+
+	ceil: function () {
+		return this.clone()._ceil();
+	},
+
+	_ceil: function () {
+		this.x = Math.ceil(this.x);
+		this.y = Math.ceil(this.y);
 		return this;
 	},
 

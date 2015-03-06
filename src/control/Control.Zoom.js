@@ -13,16 +13,13 @@ L.Control.Zoom = L.Control.extend({
 
 	onAdd: function (map) {
 		var zoomName = 'leaflet-control-zoom',
-		    container = L.DomUtil.create('div', zoomName + ' leaflet-bar');
+		    container = L.DomUtil.create('div', zoomName + ' leaflet-bar'),
+		    options = this.options;
 
-		this._map = map;
-
-		this._zoomInButton  = this._createButton(
-		        this.options.zoomInText, this.options.zoomInTitle,
-		        zoomName + '-in',  container, this._zoomIn,  this);
-		this._zoomOutButton = this._createButton(
-		        this.options.zoomOutText, this.options.zoomOutTitle,
-		        zoomName + '-out', container, this._zoomOut, this);
+		this._zoomInButton  = this._createButton(options.zoomInText, options.zoomInTitle,
+		        zoomName + '-in',  container, this._zoomIn);
+		this._zoomOutButton = this._createButton(options.zoomOutText, options.zoomOutTitle,
+		        zoomName + '-out', container, this._zoomOut);
 
 		this._updateDisabled();
 		map.on('zoomend zoomlevelschange', this._updateDisabled, this);
@@ -34,29 +31,41 @@ L.Control.Zoom = L.Control.extend({
 		map.off('zoomend zoomlevelschange', this._updateDisabled, this);
 	},
 
+	disable: function () {
+		this._disabled = true;
+		this._updateDisabled();
+		return this;
+	},
+
+	enable: function () {
+		this._disabled = false;
+		this._updateDisabled();
+		return this;
+	},
+
 	_zoomIn: function (e) {
-		this._map.zoomIn(e.shiftKey ? 3 : 1);
+		if (!this._disabled) {
+			this._map.zoomIn(e.shiftKey ? 3 : 1);
+		}
 	},
 
 	_zoomOut: function (e) {
-		this._map.zoomOut(e.shiftKey ? 3 : 1);
+		if (!this._disabled) {
+			this._map.zoomOut(e.shiftKey ? 3 : 1);
+		}
 	},
 
-	_createButton: function (html, title, className, container, fn, context) {
+	_createButton: function (html, title, className, container, fn) {
 		var link = L.DomUtil.create('a', className, container);
 		link.innerHTML = html;
 		link.href = '#';
 		link.title = title;
 
-		var stop = L.DomEvent.stopPropagation;
-
 		L.DomEvent
-		    .on(link, 'click', stop)
-		    .on(link, 'mousedown', stop)
-		    .on(link, 'dblclick', stop)
-		    .on(link, 'click', L.DomEvent.preventDefault)
-		    .on(link, 'click', fn, context)
-		    .on(link, 'click', this._refocusOnMap, context);
+		    .on(link, 'mousedown dblclick', L.DomEvent.stopPropagation)
+		    .on(link, 'click', L.DomEvent.stop)
+		    .on(link, 'click', fn, this)
+		    .on(link, 'click', this._refocusOnMap, this);
 
 		return link;
 	},
@@ -68,10 +77,10 @@ L.Control.Zoom = L.Control.extend({
 		L.DomUtil.removeClass(this._zoomInButton, className);
 		L.DomUtil.removeClass(this._zoomOutButton, className);
 
-		if (map._zoom === map.getMinZoom()) {
+		if (this._disabled || map._zoom === map.getMinZoom()) {
 			L.DomUtil.addClass(this._zoomOutButton, className);
 		}
-		if (map._zoom === map.getMaxZoom()) {
+		if (this._disabled || map._zoom === map.getMaxZoom()) {
 			L.DomUtil.addClass(this._zoomInButton, className);
 		}
 	}
@@ -91,4 +100,3 @@ L.Map.addInitHook(function () {
 L.control.zoom = function (options) {
 	return new L.Control.Zoom(options);
 };
-

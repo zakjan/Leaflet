@@ -1,5 +1,4 @@
 var fs = require('fs'),
-    jshint = require('jshint'),
     UglifyJS = require('uglify-js'),
     zlib = require('zlib'),
 
@@ -82,13 +81,13 @@ function bytesToKB(bytes) {
     return (bytes / 1024).toFixed(2) + ' KB';
 };
 
-exports.build = function (callback, compsBase32, buildName) {
+exports.build = function (callback, version, compsBase32, buildName) {
 
 	var files = getFiles(compsBase32);
 
 	console.log('Concatenating and compressing ' + files.length + ' files...');
 
-	var copy = fs.readFileSync('src/copyright.js', 'utf8'),
+	var copy = fs.readFileSync('src/copyright.js', 'utf8').replace('{VERSION}', version),
 	    intro = '(function (window, document, undefined) {',
 	    outro = '}(window, document));',
 	    newSrc = copy + intro + combineFiles(files) + outro,
@@ -143,7 +142,7 @@ exports.build = function (callback, compsBase32, buildName) {
 	});
 };
 
-exports.test = function(callback) {
+exports.test = function(complete, fail) {
 	var karma = require('karma'),
 	    testConfig = {configFile : __dirname + '/../spec/karma.conf.js'};
 
@@ -168,7 +167,7 @@ exports.test = function(callback) {
 
 	if (isArgv('--cov')) {
 		testConfig.preprocessors = {
-			'../src/**/*.js': 'coverage'
+			'src/**/*.js': 'coverage'
 		};
 		testConfig.coverageReporter = {
 			type : 'html',
@@ -182,7 +181,9 @@ exports.test = function(callback) {
 	karma.server.start(testConfig, function(exitCode) {
 		if (!exitCode) {
 			console.log('\tTests ran successfully.\n');
+			complete();
+		} else {
+			process.exit(exitCode);
 		}
-		callback();
 	});
 };

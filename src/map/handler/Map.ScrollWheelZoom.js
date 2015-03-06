@@ -3,23 +3,30 @@
  */
 
 L.Map.mergeOptions({
-	scrollWheelZoom: true
+	scrollWheelZoom: true,
+	wheelDebounceTime: 40
 });
 
 L.Map.ScrollWheelZoom = L.Handler.extend({
 	addHooks: function () {
-		L.DomEvent.on(this._map._container, 'mousewheel', this._onWheelScroll, this);
-		L.DomEvent.on(this._map._container, 'MozMousePixelScroll', L.DomEvent.preventDefault);
+		L.DomEvent.on(this._map._container, {
+			mousewheel: this._onWheelScroll,
+			MozMousePixelScroll: L.DomEvent.preventDefault
+		}, this);
+
 		this._delta = 0;
 	},
 
 	removeHooks: function () {
-		L.DomEvent.off(this._map._container, 'mousewheel', this._onWheelScroll);
-		L.DomEvent.off(this._map._container, 'MozMousePixelScroll', L.DomEvent.preventDefault);
+		L.DomEvent.off(this._map._container, {
+			mousewheel: this._onWheelScroll,
+			MozMousePixelScroll: L.DomEvent.preventDefault
+		}, this);
 	},
 
 	_onWheelScroll: function (e) {
 		var delta = L.DomEvent.getWheelDelta(e);
+		var debounce = this._map.options.wheelDebounceTime;
 
 		this._delta += delta;
 		this._lastMousePos = this._map.mouseEventToContainerPoint(e);
@@ -28,19 +35,20 @@ L.Map.ScrollWheelZoom = L.Handler.extend({
 			this._startTime = +new Date();
 		}
 
-		var left = Math.max(40 - (+new Date() - this._startTime), 0);
+		var left = Math.max(debounce - (+new Date() - this._startTime), 0);
 
 		clearTimeout(this._timer);
 		this._timer = setTimeout(L.bind(this._performZoom, this), left);
 
-		L.DomEvent.preventDefault(e);
-		L.DomEvent.stopPropagation(e);
+		L.DomEvent.stop(e);
 	},
 
 	_performZoom: function () {
 		var map = this._map,
 		    delta = this._delta,
 		    zoom = map.getZoom();
+
+		map.stop(); // stop panning and fly animations if any
 
 		delta = delta > 0 ? Math.ceil(delta) : Math.floor(delta);
 		delta = Math.max(Math.min(delta, 4), -4);
