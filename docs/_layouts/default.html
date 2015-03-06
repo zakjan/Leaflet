@@ -10,29 +10,29 @@
 	{% if title == '' %}
 	<meta property="og:title" content="Leaflet — an open-source JavaScript library for interactive maps" />
 	<meta property="og:description" content="Leaflet is a modern, lightweight open-source JavaScript library for mobile-friendly interactive maps." />
-	<meta property="og:image" content="http://leafletjs.com/docs/images/logo.png" />
+	<meta property="og:image" content="http://leafletjs.com/images/logo.png" />
 
 	<meta itemprop="name" content="Leaflet">
 	<meta itemprop="description" content="Leaflet — a modern, lightweight open-source JavaScript library for mobile-friendly interactive maps.">
-	<meta itemprop="image" content="http://leafletjs.com/docs/images/logo.png">
+	<meta itemprop="image" content="http://leafletjs.com/images/logo.png">
 	{% endif %}
 
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 	{% capture root %}{% if page.root %}{{ page.root }}{% else %}{{ post.root }}{% endif %}{% endcapture %}
 
-	<link rel="icon" type="image/png" href="{{ root }}docs/images/favicon.png" />
+	<link rel="icon" type="image/png" href="{{ root }}images/favicon.png" />
 
 	<link href="http://leafletjs.com/atom.xml" type="application/atom+xml" rel="alternate" title="Leaflet Dev Blog Atom Feed" />
 
 	<!-- Blueprint -->
-	<link rel="stylesheet" href="{{ root }}docs/css/blueprint/screen.css" media="screen, projection">
-	<link rel="stylesheet" href="{{ root }}docs/css/blueprint/print.css" media="print">
+	<link rel="stylesheet" href="{{ root }}css/blueprint/screen.css" media="screen, projection">
+	<link rel="stylesheet" href="{{ root }}css/blueprint/print.css" media="print">
 
-	<link rel="stylesheet" href="{{ root }}docs/css/screen.css" media="screen, projection" />
+	<link rel="stylesheet" href="{{ root }}css/screen.css" media="screen, projection" />
 
-	<script src="{{ root }}docs/highlight/highlight.pack.js"></script>
-	<link rel="stylesheet" href="{{ root }}docs/highlight/styles/github.css" />
+	<script src="{{ root }}highlight/highlight.pack.js"></script>
+	<link rel="stylesheet" href="{{ root }}highlight/styles/github.css" />
 
 	<!-- Leaflet -->
 	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
