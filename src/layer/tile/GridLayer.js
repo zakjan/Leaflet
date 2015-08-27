@@ -63,40 +63,40 @@
 L.GridLayer = L.Layer.extend({
 
 	options: {
-		// 🍂option tileSize, Number|Point, 256
+		// 🍂option tileSize: Number|Point = 256
 		// Width and height of tiles in the grid. Use a number if width and height are equal, or `L.point(width, height)` otherwise.
 		tileSize: 256,
 
-		// 🍂option opacity, Number, 1.0
+		// 🍂option opacity: Number = 1.0
 		// Opacity of the tiles. Can be used in the `createTile()` function.
 		opacity: 1,
 		zIndex: 1,
 
-		// 🍂option updateWhenIdle, Boolean, depends
+		// 🍂option updateWhenIdle: Boolean = depends
 		// If `false`, new tiles are loaded during panning, otherwise only after it (for better performance). `true` by default on mobile browsers, otherwise `false`.
 		updateWhenIdle: L.Browser.mobile,
 
-		// 🍂option updateInterval, Number, 200
+		// 🍂option updateInterval: Number = 200
 		// Tiles will not update more than once every `updateInterval` milliseconds.
 		updateInterval: 200,
 
-		// 🍂option attribution, String, null
+		// 🍂option attribution: String = null
 		// String to be shown in the attribution control, describes the layer data, e.g. "© Mapbox".
 		attribution: null,
 
-		// 🍂option zIndex, Number, null
+		// 🍂option zIndex: Number = null
 		// The explicit zIndex of the tile layer. Not set by default.
 		zIndex: null,
 
-		// 🍂option bounds, LatLngBounds, null
+		// 🍂option bounds: LatLngBounds = null
 		// If set, tiles will only be loaded inside inside the set `LatLngBounds`.
 		bounds: null,
 
-		// 🍂option minZoom, Number, 0
+		// 🍂option minZoom: Number = 0
 		// The minimum zoom level that tiles will be loaded at. By default the entire map.
 		minZoom: 0,
 
-		// 🍂option maxZoom, Number, null
+		// 🍂option maxZoom: Number = null
 		// The maximum zoom level that tiles will be loaded at.
 		maxZoom: null,
 
@@ -136,7 +136,7 @@ L.GridLayer = L.Layer.extend({
 		this._tileZoom = null;
 	},
 
-	// 🍂method bringToFront, this
+	// 🍂method bringToFront: this
 	// Brings the tile layer to the top of all tile layers.
 	bringToFront: function () {
 		if (this._map) {
@@ -146,7 +146,7 @@ L.GridLayer = L.Layer.extend({
 		return this;
 	},
 
-	// 🍂method bringToBack, this
+	// 🍂method bringToBack: this
 	// Brings the tile layer to the bottom of all tile layers.
 	bringToBack: function () {
 		if (this._map) {
@@ -156,20 +156,19 @@ L.GridLayer = L.Layer.extend({
 		return this;
 	},
 
-	// 🍂method getAttribution, String
+	// 🍂method getAttribution: String
 	// Used by the `attribution control`, returns the [attribution option](#gridlayer-attribution).
 	getAttribution: function () {
 		return this.options.attribution;
 	},
 
-	// 🍂method getcontainer, String
+	// 🍂method getcontainer: String
 	// Returns the HTML element that contains the tiles for this layer.
 	getContainer: function () {
 		return this._container;
 	},
 
-	// 🍂method setOpacity, this
-	// 🍂param opacity, Number
+	// 🍂method setOpacity(opacity: Number): this
 	// Changes the [opacity](#gridlayer-opacity) of the grid layer.
 	setOpacity: function (opacity) {
 		this.options.opacity = opacity;
@@ -177,8 +176,7 @@ L.GridLayer = L.Layer.extend({
 		return this;
 	},
 
-	// 🍂method setZIndex, this
-	// 🍂param zIndex, Number
+	// 🍂method setZIndex(zIndex: Number): this
 	// Changes the [zIndex](#gridlayer-zindex) of the grid layer.
 	setZIndex: function (zIndex) {
 		this.options.zIndex = zIndex;
@@ -187,13 +185,13 @@ L.GridLayer = L.Layer.extend({
 		return this;
 	},
 
-	// 🍂method isLoading, Boolean
+	// 🍂method isLoading: Boolean
 	// Returns `true` if any tile in the grid layer has not finished loading.
 	isLoading: function () {
 		return this._loading;
 	},
 
-	// 🍂method redraw, this
+	// 🍂method redraw: this
 	// Causes the layer to clear all the tiles and request them again.
 	redraw: function () {
 		if (this._map) {
@@ -227,9 +225,8 @@ L.GridLayer = L.Layer.extend({
 		return events;
 	},
 
-	// 🍂method createTile, HTMLElement
-	// 🍂param coords, Object
-	// 🍂param done?, Function
+	// 🍂section Extension methods
+	// 🍂method createTile(coords: Object, done?: Function): HTMLElement
 	// Called only internally, must be overriden by classes extending `GridLayer`.
 	// Returns the `HTMLElement` corresponding to the given `coords`. If the `done` callback
 	// is specified, it must be called when the tile has finished loading and drawing.
@@ -237,7 +234,8 @@ L.GridLayer = L.Layer.extend({
 		return document.createElement('div');
 	},
 
-	// 🍂method getTileSize, Point
+	// 🍂section
+	// 🍂method getTileSize: Point
 	// Normalizes the [tileSize option](#gridlayer-tilesize) into a point. Used by the `createTile()` method.
 	getTileSize: function () {
 		var s = this.options.tileSize;
@@ -615,7 +613,7 @@ L.GridLayer = L.Layer.extend({
 			// if its the first batch of tiles to load
 			if (!this._loading) {
 				this._loading = true;
-				// 🍂event loading, Event
+				// 🍂event loading: Event
 				// Fired when the grid layer starts loading tiles
 				this.fire('loading');
 			}
@@ -688,7 +686,7 @@ L.GridLayer = L.Layer.extend({
 
 		delete this._tiles[key];
 
-		// 🍂event tileunload, TileEvent
+		// 🍂event tileunload: TileEvent
 		// Fired when a tile is removed (e.g. when a tile goes off the screen).
 		this.fire('tileunload', {
 			tile: tile.el,
@@ -743,7 +741,7 @@ L.GridLayer = L.Layer.extend({
 		};
 
 		container.appendChild(tile);
-		// 🍂event tileloadstart, TileEvent
+		// 🍂event tileloadstart: TileEvent
 		// Fired when a tile is requested and starts loading.
 		this.fire('tileloadstart', {
 			tile: tile,
@@ -755,7 +753,7 @@ L.GridLayer = L.Layer.extend({
 		if (!this._map) { return; }
 
 		if (err) {
-			// 🍂event tileerror, TileEvent
+			// 🍂event tileerror: TileEvent
 			// Fired when there is an error loading a tile.
 			this.fire('tileerror', {
 				error: err,
@@ -781,7 +779,7 @@ L.GridLayer = L.Layer.extend({
 
 		L.DomUtil.addClass(tile.el, 'leaflet-tile-loaded');
 
-		// 🍂event tileload, TileEvent
+		// 🍂event tileload: TileEvent
 		// Fired when a tile loads.
 		this.fire('tileload', {
 			tile: tile.el,
@@ -790,7 +788,7 @@ L.GridLayer = L.Layer.extend({
 
 		if (this._noTilesToLoad()) {
 			this._loading = false;
-			// 🍂event load, TileEvent
+			// 🍂event load: TileEvent
 			// Fired when the grid layer loaded all visible tiles.
 			this.fire('load');
 
@@ -831,8 +829,7 @@ L.GridLayer = L.Layer.extend({
 	}
 });
 
-// 🍂factory L.gridLayer
-// 🍂param options?, GridLayer options
+// 🍂factory L.gridLayer(options?: GridLayer options)
 // Creates a new instance of GridLayer with the supplied options.
 L.gridLayer = function (options) {
 	return new L.GridLayer(options);
