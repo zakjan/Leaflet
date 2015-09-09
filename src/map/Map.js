@@ -90,7 +90,7 @@ L.Map = L.Evented.extend({
 		// 🍂option zoomDelta: Number = 1
 		// Controls how much the map's zoom level will change after a
 		// [`zoomIn()`](#map-zoomin), [`zoomOut()`](#map-zoomout), pressing `+`
-		// or `-` in the keyboard, or using the [zoom controls](#control-zoom).
+		// or `-` on the keyboard, or using the [zoom controls](#control-zoom).
 		// Values smaller than `1` (e.g. `0.5`) allow for greater granularity.
 		zoomDelta: 1,
 
@@ -169,7 +169,7 @@ L.Map = L.Evented.extend({
 		return this.setZoom(this._zoom + delta, options);
 	},
 
-	// 🍂method zoomIn(delta?: Number, options?: Zoom options): this
+	// 🍂method zoomOut(delta?: Number, options?: Zoom options): this
 	// Decreases the zoom of the map by `delta` (`1` by default).
 	zoomOut: function (delta, options) {
 		delta = delta || (L.Browser.any3d ? this.options.zoomDelta : 1);
@@ -1089,18 +1089,16 @@ L.Map = L.Evented.extend({
 
 // 🍂section
 
-// 🍂factory L.map(id: HTMLElement|String, options?: Map options)
-// Instantiates a map object given a `<div>` element (or its id) and optionally
-// an object literal with `Map options`.
+// 🍂factory L.map(id: String, options?: Map options)
+// Instantiates a map object given the DOM ID of a `<div>` element
+// and optionally an object literal with `Map options`.
+//
+// Stuff with two lines.
+// 🍂alternative
+// 🍂factory L.map(el: HTMLElement, options?: Map options)
+// Instantiates a map object given an instance of a `<div>` HTML element
+// and optionally an object literal with `Map options`.
 L.map = function (id, options) {
 	return new L.Map(id, options);
 };
 
-
-/*
-🍂section
-🍂property foo
-
-Foobar.
-
-*/

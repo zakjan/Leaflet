@@ -225,7 +225,10 @@ L.DomEvent = {
 	},
 
 	// 🍂function getWheelDelta(ev: DOMEvent): Number
-	// Gets normalized wheel delta from a mousewheel DOM event.
+	// Gets normalized wheel delta from a mousewheel DOM event, in vertical
+	// pixels scrolled (negative if scrolling down).
+	// Events from pointing devices without precise scrolling are mapped to
+	// a best guess of between 50-60 pixels.
 	getWheelDelta: function (e) {
 		return (e.deltaY && e.deltaMode === 0) ? -e.deltaY :        // Pixels
 		       (e.deltaY && e.deltaMode === 1) ? -e.deltaY * 18 :   // Lines
