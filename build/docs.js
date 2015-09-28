@@ -9,6 +9,8 @@ function buildDocs() {
 		showInheritancesWhenEmpty: true
 	});
 
+	// Leaflet uses a couple of non-standard documentable things:
+	doc.registerDocumentable('pane', 'Map panes');
 
 	doc.addFile('build/docs-index.leafdoc', false);
 	doc.addDir('src');
@@ -82,7 +84,7 @@ function buildDocs() {
 //
 // 	doc.addFile('src/core/Class.js');
 // 	doc.addFile('src/core/Events.js');
-// 	doc.addFile('src/layer/Layer.js');	/// TODO: Ensure L.Layer appears here, not in popups where some stuff is added.
+// 	doc.addFile('src/layer/Layer.js');
 // 	doc.addFile('src/layer/Layer.Popup.js');
 // 	doc.addFile('src/control/Control.js');
 // 	doc.addFile('src/core/Handler.js');

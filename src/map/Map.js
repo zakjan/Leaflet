@@ -745,13 +745,35 @@ L.Map = L.Evented.extend({
 		var panes = this._panes = {};
 		this._paneRenderers = {};
 
+		// 🍂section
+		//
+		// Panes are DOM elements used to control the ordering of layers on the map. You
+		// can access panes with [`map.getPane`](#map-getpane) or
+		// [`map.getPanes`](#map-getpanes) methods. New panes can be created with the
+		// [`map.createPane`](#map-createpane) method.
+		//
+		// Every map has the following default panes that differ only in zIndex.
+		//
+		// 🍂pane mapPane: HTMLElement = 'auto'
+		// Pane that contains all other map panes
+
 		this._mapPane = this.createPane('mapPane', this._container);
 		L.DomUtil.setPosition(this._mapPane, new L.Point(0, 0));
 
+		// 🍂pane tilePane: HTMLElement = 2
+		// Pane for tile layers
 		this.createPane('tilePane');
+		// 🍂pane overlayPane: HTMLElement = 4
+		// Pane for overlays like polylines and polygons
 		this.createPane('shadowPane');
+		// 🍂pane shadowPane: HTMLElement = 5
+		// Pane for overlay shadows (e.g. marker shadows)
 		this.createPane('overlayPane');
+		// 🍂pane markerPane: HTMLElement = 6
+		// Pane for marker icons
 		this.createPane('markerPane');
+		// 🍂pane popupPane: HTMLElement = 7
+		// Pane for popups.
 		this.createPane('popupPane');
 
 		if (!this.options.markerZoomAnimation) {
@@ -1150,7 +1172,6 @@ L.Map = L.Evented.extend({
 // Instantiates a map object given the DOM ID of a `<div>` element
 // and optionally an object literal with `Map options`.
 //
-// Stuff with two lines.
 // 🍂alternative
 // 🍂factory L.map(el: HTMLElement, options?: Map options)
 // Instantiates a map object given an instance of a `<div>` HTML element
@@ -1158,4 +1179,6 @@ L.Map = L.Evented.extend({
 L.map = function (id, options) {
 	return new L.Map(id, options);
 };
+
+
 
