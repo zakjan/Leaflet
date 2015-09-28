@@ -9,8 +9,12 @@ function buildDocs() {
 		showInheritancesWhenEmpty: true
 	});
 
-	// Leaflet uses a couple of non-standard documentable things:
+	// Leaflet uses a couple of non-standard documentable things. They are not
+	// important enough to be classes/namespaces of their own, and should
+	// just be listed in a table like the rest of documentables:
 	doc.registerDocumentable('pane', 'Map panes');
+	doc.registerDocumentable('projection', 'Defined projections');
+	doc.registerDocumentable('crs', 'Defined CRSs');
 
 	doc.addFile('build/docs-index.leafdoc', false);
 	doc.addDir('src');
@@ -20,7 +24,6 @@ function buildDocs() {
 	/// TODO: Review sections in Map.js, maybe move methods around
 // 	doc.addFile('src/map/Map.js');
 
-	/// TODO: Map panes!!
 	/// TODO: Options for map methods!! (fitbounds opts, zoom-pan opts, etc)
 	/// Maybe implement the "minor classes" thing?
 
@@ -88,8 +91,8 @@ function buildDocs() {
 // 	doc.addFile('src/layer/Layer.Popup.js');
 // 	doc.addFile('src/control/Control.js');
 // 	doc.addFile('src/core/Handler.js');
-// 	// doc.addFile('src/geo/projection/*.js');	/// FIXME: Projection base, projections
-// 	doc.addFile('src/geo/crs/CRS.js');	/// FIXME: Other CRSs
+// 	doc.addFile('src/geo/projection/*.js');
+// 	doc.addFile('src/geo/crs/CRS.js');
 
 	/// FIXME: Event objects
 	/// Maybe implement the "minor classes" thing?

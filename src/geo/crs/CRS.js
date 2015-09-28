@@ -1,13 +1,15 @@
 /*
- * L.CRS is the base object for all defined CRS (Coordinate Reference Systems) in Leaflet.
+ * 🍂class CRS
+ * 🍂aka L.CRS
+ * Abstract class that defines coordinate reference systems for projecting
+ * geographical points into pixel (screen) coordinates and back (and to
+ * coordinates in other units for WMS services). See
+ * [spatial reference system](http://en.wikipedia.org/wiki/Coordinate_reference_system).
+ *
+ * Leaflet defines the most usual CRSs by default. If you want to use a
+ * CRS not defined by default, take a look at the
+ * [Proj4Leaflet](https://github.com/kartena/Proj4Leaflet) plugin.
  */
-
-// 🍂class CRS
-// 🍂aka L.CRS
-// Abstract class that defines coordinate reference systems for projecting
-// geographical points into pixel (screen) coordinates and back (and to
-// coordinates in other units for WMS services). See
-// [spatial reference system](http://en.wikipedia.org/wiki/Coordinate_reference_system).
 
 L.CRS = {
 	// 🍂method latLngToPoint(latlng: LatLng, zoom: Number): Point
@@ -71,11 +73,15 @@ L.CRS = {
 		return L.bounds(min, max);
 	},
 
-	// 🍂property wrapLng: Number[] = undefined
+	// 🍂property code: String
+	// Standard code name of the CRS passed into WMS services (e.g. `'EPSG:3857'`)
+	//
+	// 🍂property wrapLng: Number[]
 	// An array of two numbers defining whether the longitude coordinate axis
 	// wraps around a given range and how. Defaults to `[-180, 180]` in most
 	// geographical CRSs.
-	// 🍂property wrapLat: Number[] = undefined
+	//
+	// 🍂property wrapLat: Number[]
 	// Like `wrapLng`, but for the latitude axis.
 
 	// wrapLng: [min, max],
