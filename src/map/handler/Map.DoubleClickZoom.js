@@ -4,6 +4,7 @@
 
 // 🍂namespace Map
 // 🍂section Interaction Options
+
 L.Map.mergeOptions({
 	// 🍂option doubleClickZoom: Boolean = true
 	// Whether the map can be zoomed in by double clicking on it and
@@ -37,6 +38,15 @@ L.Map.DoubleClickZoom = L.Handler.extend({
 });
 
 // 🍂section Handlers
+//
+// Map properties include interaction handlers that allow you to control
+// interaction behavior in runtime, enabling or disabling certain features such
+// as dragging or touch zoom (see `Handler` methods). For example:
+//
+// ```js
+// map.doubleClickZoom.disable();
+// ```
+//
 // 🍂property doubleClickZoom: Handler
 // Double click zoom handler.
 L.Map.addInitHook('addHandler', 'doubleClickZoom', L.Map.DoubleClickZoom);
