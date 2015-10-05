@@ -101,6 +101,7 @@ L.Layer = L.Evented.extend({
 });
 
 /* 🍂section Extension methods
+ * 🍂uninheritable
  *
  * Every layer should extend from `L.Layer` and (re-)implement the following methods.
  *

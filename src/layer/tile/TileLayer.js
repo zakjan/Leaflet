@@ -138,6 +138,7 @@ L.TileLayer = L.GridLayer.extend({
 	},
 
 	// 🍂section Extension methods
+	// 🍂uninheritable
 	// Layers extending `TileLayer` might reimplement the following method.
 	// 🍂method getTileUrl(coords: Object): String
 	// Called only internally, returns the URL for a tile given its coordinates.
