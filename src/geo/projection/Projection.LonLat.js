@@ -2,7 +2,7 @@
  * 🍂namespace Projection
  * 🍂section
  * Leaflet comes with a set of already defined Projections out of the box:
- * 
+ *
  * 🍂projection L.Projection.LonLat
  *
  * Equirectangular, or Plate Carree projection — the most simple projection,

@@ -58,7 +58,7 @@ L.Marker = L.Layer.extend({
 		// `Map pane` where the markers icon will be added.
 		pane: 'markerPane',
 
-		/// FIXME: shadowPane is no longer a valid option
+		// FIXME: shadowPane is no longer a valid option
 		nonBubblingEvents: ['click', 'dblclick', 'mouseover', 'mouseout', 'contextmenu']
 	},
 

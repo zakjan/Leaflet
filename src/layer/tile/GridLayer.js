@@ -70,7 +70,6 @@ L.GridLayer = L.Layer.extend({
 		// 🍂option opacity: Number = 1.0
 		// Opacity of the tiles. Can be used in the `createTile()` function.
 		opacity: 1,
-		zIndex: 1,
 
 		// 🍂option updateWhenIdle: Boolean = depends
 		// If `false`, new tiles are loaded during panning, otherwise only after it (for better performance). `true` by default on mobile browsers, otherwise `false`.
@@ -84,11 +83,11 @@ L.GridLayer = L.Layer.extend({
 		// String to be shown in the attribution control, describes the layer data, e.g. "© Mapbox".
 		attribution: null,
 
-		// 🍂option zIndex: Number = null
-		// The explicit zIndex of the tile layer. Not set by default.
-		zIndex: null,
+		// 🍂option zIndex: Number = 1
+		// The explicit zIndex of the tile layer.
+		zIndex: 1,
 
-		// 🍂option bounds: LatLngBounds = null
+		// 🍂option bounds: LatLngBounds = undefined
 		// If set, tiles will only be loaded inside inside the set `LatLngBounds`.
 		bounds: null,
 
@@ -96,14 +95,14 @@ L.GridLayer = L.Layer.extend({
 		// The minimum zoom level that tiles will be loaded at. By default the entire map.
 		minZoom: 0,
 
-		// 🍂option maxZoom: Number = null
+		// 🍂option maxZoom: Number = undefined
 		// The maximum zoom level that tiles will be loaded at.
-		maxZoom: null,
+//		maxZoom: undefined,
 
 		// 🍂option noWrap: Boolean = false
 		// Whether the layer is wrapped around the antimeridian. If `true`, the
 		// GridLayer will only be displayed once at low zoom levels.
-		noWrap: false
+		noWrap: false,
 
 		// 🍂option pane: String = 'tilePane'
 		// `Map pane` where the grid layer will be added.

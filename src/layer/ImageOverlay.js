@@ -31,7 +31,7 @@ L.ImageOverlay = L.Layer.extend({
 
 		// 🍂option attribution: String = null
 		// An optional string containing HTML to be shown on the `Attribution control`
-		attribution: null,
+		attribution: null
 
 		/*
 		crossOrigin: <Boolean>,

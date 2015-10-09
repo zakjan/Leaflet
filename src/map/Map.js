@@ -26,13 +26,13 @@ L.Map = L.Evented.extend({
 		// sure what it means.
 		crs: L.CRS.EPSG3857,
 
-		// 🍂option center: LatLng = null
+		// 🍂option center: LatLng = undefined
 		// Initial geographic center of the map
-		center: null,
+		center: undefined,
 
-		// 🍂option zoom: Number = null
+		// 🍂option zoom: Number = undefined
 		// Initial map zoom level
-		zoom: null,
+		zoom: undefined,
 
 		// 🍂option minZoom: Number = undefined
 		// Minimum zoom level of the map. Overrides any `minZoom` option set on map layers.
@@ -51,12 +51,12 @@ L.Map = L.Evented.extend({
 		// geographical bounds, bouncing the user back when he tries to pan
 		// outside the view. To set the restriction dynamically, use
 		// [`setMaxBounds`](#map-setmaxbounds) method.
-		maxBounds: null,
+		maxBounds: undefined,
 
 		// 🍂option renderer: Renderer = *
 		// The default method for drawing vector layers on the map. `L.SVG`
 		// or `L.Canvas` by default depending on browser support.
-		renderer: null,
+		renderer: undefined,
 
 
 		// 🍂section Animation Options
@@ -538,9 +538,9 @@ L.Map = L.Evented.extend({
 		return new L.Bounds(topLeftPoint, topLeftPoint.add(this.getSize()));
 	},
 
-	/// TODO: Check semantics - isn't the pixel origin the 0,0 coord relative to
-	/// the map pane? "left point of the map layer" can be confusing, specially
-	/// since there can be negative offsets.
+	// TODO: Check semantics - isn't the pixel origin the 0,0 coord relative to
+	// the map pane? "left point of the map layer" can be confusing, specially
+	// since there can be negative offsets.
 	// 🍂method getPixelOrigin(): Point
 	// Returns the projected pixel coordinates of the top left point of
 	// the map layer (useful in custom layer and overlay implementations).

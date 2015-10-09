@@ -31,7 +31,7 @@ L.Icon = L.Class.extend({
 
 	/* 🍂section
 	 * 🍂aka Icon options
-	 * 
+	 *
 	 * 🍂option iconUrl: String = null
 	 * **(required)** The URL to the icon image (absolute or relative to your script path).
 	 *
