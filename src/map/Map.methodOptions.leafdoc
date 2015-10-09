@@ -4,6 +4,10 @@ This file documents the common options passed to several map methods.
 
 🍂miniclass Locate options (Map)
 🍂aka locate options
+🍂section
+
+Some of the geolocation methods for `Map` take in an `options` parameter. This
+is a plain javascript object with the following optional components:
 
 🍂option watch: Boolean = false
 If `true`, starts continous watching of location changes (instead of detecting it
@@ -33,6 +37,12 @@ Enables high accuracy, see [description in the W3C spec](http://dev.w3.org/geo/a
 
 🍂miniclass Zoom options (Map)
 🍂aka zoom options
+🍂section
+
+Some of the `Map` methods which modify the zoom level take in an `options`
+parameter. This is a plain javascript object with the following optional
+components:
+
 
 🍂option animate: Boolean
 If not specified, zoom animation will happen if the zoom origin is inside the
@@ -45,6 +55,11 @@ without animation.
 
 🍂miniclass Pan options (Map)
 🍂aka pan options
+🍂section
+
+Some of the `Map` methods which modify the center of the map take in an `options`
+parameter. This is a plain javascript object with the following optional
+components:
 
 🍂option animate: Boolean
 If `true`, panning will always be animated if possible. If `false`, it will
