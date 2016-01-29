@@ -120,7 +120,7 @@
 
 
 		// 🍂property touch: Boolean
- // `true` for all browsers supporting [touch events](https://developer.mozilla.org/docs/Web/API/Touch_events).
+		// `true` for all browsers supporting [touch events](https://developer.mozilla.org/docs/Web/API/Touch_events).
 		touch: !!touch,
 
 		// 🍂property msPointer: Boolean

@@ -5,7 +5,7 @@ function buildDocs() {
 
 	var LeafDoc = require('leafdoc');
 	var doc = new LeafDoc({
-		templateDir: '../build/leafdoc-templates',
+		templateDir: 'build/leafdoc-templates',
 		showInheritancesWhenEmpty: true
 	});
 

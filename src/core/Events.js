@@ -168,7 +168,9 @@ L.Evented = L.Class.extend({
 	},
 
 	// 🍂method fire(type: String, data?: Object): this
-	// Fires an event of the specified type. You can optionally provide an data object — the first argument of the listener function will contain its properties.
+	// Fires an event of the specified type. You can optionally provide an data
+	// object — the first argument of the listener function will contain its
+	// properties.
 	fire: function (type, data, propagate) {
 		if (!this.listens(type, propagate)) { return this; }
 
@@ -241,13 +243,16 @@ L.Evented = L.Class.extend({
 		    .on(types, handler, context);
 	},
 
-	// adds a parent to propagate events to (when you fire with true as a 3rd argument)
+	// 🍂method addEventParent(obj: Evented): this
+	// Adds an event parent - an `Evented` that will receive propagated events
 	addEventParent: function (obj) {
 		this._eventParents = this._eventParents || {};
 		this._eventParents[L.stamp(obj)] = obj;
 		return this;
 	},
 
+	// 🍂method removeEventParent(obj: Evented): this
+	// Removes an event parent, so it will stop receiving propagated events
 	removeEventParent: function (obj) {
 		if (this._eventParents) {
 			delete this._eventParents[L.stamp(obj)];

@@ -18,6 +18,8 @@ This file just defines the order of the classes in the docs.
 🍂class Rectangle
 🍂class Circle
 🍂class CircleMarker
+🍂class SVG
+🍂class Canvas
 
 🍂class LayerGroup
 🍂class FeatureGroup
@@ -54,4 +56,5 @@ This file just defines the order of the classes in the docs.
 🍂class Handler
 🍂class Projection
 🍂class CRS
+🍂class Renderer
 🍂class Event objects

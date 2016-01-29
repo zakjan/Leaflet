@@ -258,6 +258,8 @@ L.Popup = L.Layer.extend({
 		return !!this._map && this._map.hasLayer(this);
 	},
 
+	// 🍂method bringToFront: this
+	// Brings this popup in front of other popups (in the same map pane).
 	bringToFront: function () {
 		if (this._map) {
 			L.DomUtil.toFront(this._container);
@@ -265,6 +267,8 @@ L.Popup = L.Layer.extend({
 		return this;
 	},
 
+	// 🍂method bringToBack: this
+	// Brings this popup to the back of other popups (in the same map pane).
 	bringToBack: function () {
 		if (this._map) {
 			L.DomUtil.toBack(this._container);

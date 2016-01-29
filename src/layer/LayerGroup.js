@@ -76,6 +76,10 @@ L.LayerGroup = L.Layer.extend({
 		return this;
 	},
 
+	// 🍂method invoke(methodName: string, …): this
+	// Calls `methodName` on every layer contained in this group, passing any
+	// additional parameters. Has no effect if the layers contained do not
+	// implement `methodName`.
 	invoke: function (methodName) {
 		var args = Array.prototype.slice.call(arguments, 1),
 		    i, layer;
@@ -134,6 +138,8 @@ L.LayerGroup = L.Layer.extend({
 		return layers;
 	},
 
+	// 🍂method setZIndex(zIndex): this
+	// Calls `setZIndex` on every layer contained in this group, passing the z-index.
 	setZIndex: function (zIndex) {
 		return this.invoke('setZIndex', zIndex);
 	},
