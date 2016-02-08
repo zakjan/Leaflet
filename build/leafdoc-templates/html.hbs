@@ -163,6 +163,16 @@
 			} else {
 				// For table rows, insert the anchor inside the first <td>
 				el.querySelector('td').appendChild(anchor);
+
+				// Clicking on the row (meaning "the link icon on the ::before)
+				// jumps to the item
+				el.parentNode.onclick = function(hash){
+					return function(ev) {
+						if (ev.offsetX < 0) {
+							window.location.hash = '#' + ev.target.parentNode.id;
+						}
+					};
+				}(el.id);
 			}
 		}
 	}
@@ -208,13 +218,10 @@
 	}
 
 	label,
-	h4 {
+	section > h4 {
 		display: block;
-		padding: 0.75em 1em 0.25em 0;
-		font-size: 14px;
-		font-weight: bold;
-		margin: 0;
-		color: #666;
+		font-weight: 500;
+		margin: 1em 0 0.25em;
 	}
 
 	label {

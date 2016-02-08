@@ -191,9 +191,9 @@ L.SVG = L.Renderer.extend({
 // There are several static functions which can be called without instantiating L.SVG:
 L.extend(L.SVG, {
 	// 🍂function create(name: String): SVGElement
-	// Returns a instance of [https://developer.mozilla.org/docs/Web/API/SVGElement](SVGElement),
-	// corresponding to the classname passed. For example, using 'line' will return
-	// an instance of [https://developer.mozilla.org/docs/Web/API/SVGLineElement](SVGLineElement).
+	// Returns a instance of [SVGElement](https://developer.mozilla.org/docs/Web/API/SVGElement),
+	// corresponding to the class name passed. For example, using 'line' will return
+	// an instance of [SVGLineElement](https://developer.mozilla.org/docs/Web/API/SVGLineElement).
 	create: function (name) {
 		return document.createElementNS('http://www.w3.org/2000/svg', name);
 	},

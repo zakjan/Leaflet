@@ -1,4 +1,6 @@
 
+var packageDef = require('../package.json');
+
 function buildDocs() {
 
 	console.log('Building Leaflet documentation with Leafdoc');
@@ -24,18 +26,11 @@ function buildDocs() {
 	doc.addDir('src');
 	doc.addFile('build/docs-misc.leafdoc', false);
 
-
-	/// TODO: Review sections in Map.js, maybe move methods around
-
-	/// FIXME: Event objects
-	/// Maybe implement the "minor classes" thing?
-
-
 	var out = doc.outputStr();
 
 	var fs = require('fs');
 
-	fs.writeFileSync('dist/reference.html', out);
+	fs.writeFileSync('dist/reference-' + packageDef.version + '.html', out);
 }
 
 module.exports = buildDocs;
