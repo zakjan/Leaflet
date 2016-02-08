@@ -137,8 +137,10 @@ L.GeoJSON = L.FeatureGroup.extend({
 // 🍂section
 // There are several static functions which can be called without instantiating L.GeoJSON:
 L.extend(L.GeoJSON, {
-	// 🍂function geometryToLayer(featureData: Object, pointToLayer?: Function): Layer
-	// Creates a `Layer` from a given GeoJSON feature. Can use a custom [`pointToLayer`](#geojson-pointtolayer) function.
+	// 🍂function geometryToLayer(featureData: Object, options?: GeoJSON options): Layer
+	// Creates a `Layer` from a given GeoJSON feature. Can use a custom
+	// [`pointToLayer`](#geojson-pointtolayer) and/or [`coordsToLatLng`](#geojson-coordstolatlng)
+	// functions if provided as options.
 	geometryToLayer: function (geojson, options) {
 
 		var geometry = geojson.type === 'Feature' ? geojson.geometry : geojson,

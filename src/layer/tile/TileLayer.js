@@ -43,7 +43,9 @@ L.TileLayer = L.GridLayer.extend({
 		maxZoom: 18,
 
 		// 🍂option maxNativeZoom: Number = null
-		// Maximum zoom number the tiles source has available. If it is specified, the tiles on all zoom levels higher than `maxNativeZoom` will be loaded from `maxZoom` level and auto-scaled.
+		// Maximum zoom number the tile source has available. If it is specified,
+		// the tiles on all zoom levels higher than `maxNativeZoom` will be loaded
+		// from `maxNativeZoom` level and auto-scaled.
 		maxNativeZoom: null,
 
 		// 🍂option subdomains: String|String[] = 'abc'
