@@ -19,6 +19,7 @@ L.Circle = L.CircleMarker.extend({
 	initialize: function (latlng, options) {
 		L.setOptions(this, options);
 		this._latlng = L.latLng(latlng);
+		// 🍂option radius: Number; Radius of the circle, in meters.
 		this._mRadius = this.options.radius;
 	},
 
@@ -83,7 +84,7 @@ L.Circle = L.CircleMarker.extend({
 	}
 });
 
-// 🍂factory L.circle(latlng: LatLng, radius: Number, options?: Path options)
+// 🍂factory L.circle(latlng: LatLng, options?: Path options)
 // Instantiates a circle object given a geographical point, and an options object
 // which contains the circle radius.
 // 🍂alternative

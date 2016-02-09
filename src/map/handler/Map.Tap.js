@@ -5,6 +5,7 @@
 // 🍂namespace Map
 // 🍂section Interaction Options
 L.Map.mergeOptions({
+	// 🍂section Touch interaction options
 	// 🍂option tap: Boolean = true
 	// Enables mobile hacks for supporting instant taps (fixing 200ms click
 	// delay on iOS/Android) and touch holds (fired as `contextmenu` events).

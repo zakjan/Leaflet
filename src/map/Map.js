@@ -79,6 +79,13 @@ L.Map = L.Evented.extend({
 		// solid, preventing the user from dragging outside the bounds.
 		maxBoundsViscosity: 0.0,
 
+		// 🍂option transform3DLimit: Number = 2^23
+		// Defines the maximum size of a CSS translation transform. The default
+		// value should not be changed unless a web browser positions layers in
+		// the wrong place after doing a large `panBy`.
+		transform3DLimit: 8388608, // Precision limit of a 32-bit float
+
+		// 🍂section Interaction Options
 		// 🍂option zoomSnap: Number = 1
 		// Forces the map's zoom level to always be a multiple of this, particularly
 		// right after a [`fitBounds()`](#map-fitbounds) or a pinch-zoom.
@@ -94,13 +101,6 @@ L.Map = L.Evented.extend({
 		// Values smaller than `1` (e.g. `0.5`) allow for greater granularity.
 		zoomDelta: 1,
 
-		// 🍂option transform3DLimit: Number = 2^23
-		// Defines the maximum size of a CSS translation transform. The default
-		// value should not be changed unless a web browser positions layers in
-		// the wrong place after doing a large `panBy`.
-		transform3DLimit: 8388608, // Precision limit of a 32-bit float
-
-		// 🍂section Interaction Options
 		// 🍂option trackResize: Boolean = true
 		// Whether the map automatically handles browser window resize to update itself.
 		trackResize: true
@@ -163,14 +163,14 @@ L.Map = L.Evented.extend({
 	},
 
 	// 🍂method zoomIn(delta?: Number, options?: Zoom options): this
-	// Increases the zoom of the map by `delta` (`1` by default).
+	// Increases the zoom of the map by `delta` ([`zoomDelta`](#map-zoomdelta) by default).
 	zoomIn: function (delta, options) {
 		delta = delta || (L.Browser.any3d ? this.options.zoomDelta : 1);
 		return this.setZoom(this._zoom + delta, options);
 	},
 
 	// 🍂method zoomOut(delta?: Number, options?: Zoom options): this
-	// Decreases the zoom of the map by `delta` (`1` by default).
+	// Decreases the zoom of the map by `delta` ([`zoomDelta`](#map-zoomdelta) by default).
 	zoomOut: function (delta, options) {
 		delta = delta || (L.Browser.any3d ? this.options.zoomDelta : 1);
 		return this.setZoom(this._zoom - delta, options);

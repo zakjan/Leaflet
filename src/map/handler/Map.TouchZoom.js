@@ -5,6 +5,7 @@
 // 🍂namespace Map
 // 🍂section Interaction Options
 L.Map.mergeOptions({
+	// 🍂section Touch interaction options
 	// 🍂option touchZoom: Boolean = *
 	// Whether the map can be zoomed by touch-dragging with two fingers. If
 	// passed `'center'`, it will zoom to the center of the view regardless of
