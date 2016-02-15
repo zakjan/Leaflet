@@ -102,7 +102,7 @@ L.Map.include({
 			}
 		}
 
-		// 🍂event locationfound: ErrorEvent
+		// 🍂event locationfound: LocationEvent
 		// Fired when geolocation (using the [`locate`](#map-locate) method)
 		// went successfully.
 		this.fire('locationfound', data);
